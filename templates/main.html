@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Dashboard</title>
+    <script>
+        function unsubscribe(subscriptionId) {
+            fetch('/api/unsubscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: subscriptionId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchSubscriptions(); // Refresh the list after unsubscribing
+            })
+            .catch(error => console.error('Failed to unsubscribe:', error));
+        }
+
+        function subscribe(email, music_title, artist, year) {
+            const data = { email: email, music_title: music_title, artist: artist, year: year};
+            fetch('/api/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchSubscriptions(); // Refresh the list after unsubscribing
+            })
+            .catch(error => console.error('Failed to unsubscribe:', error));
+        }
+
+    </script>
+</head>
+<body>
+    <h1>Welcome, {{ user_name }}</h1>
+    <h2>Your Subscriptions</h2>
+    
+    <div>
+        {% for subscription in subscriptions %}
+            <p>
+                Title : {{subscription.music_title}}
+            </p>
+
+            <p>
+                Artist : {{subscription.artist}}
+            </p>
+
+            <p>
+                Year : {{subscription.year}}
+            </p>
+
+            <p>
+            <img src="{{subscription.image_url}}" alt = "{{subscription.music_title}}"/>
+            </p>
+
+            <p>
+            <button onclick="unsubscribe('{{subscription.id}}')">Unsubscribe</button>
+            </p>
+
+        {% endfor %}
+    </div> 
+
+    <h3>Query Area</h3>
+    <form action="/api/query" method="post">
+        <input type="text" name="title" placeholder="Title"/>
+        <input type="text" name="year" placeholder="Year"/>
+        <input type="text" name="artist" placeholder="Artist"/>
+        <input type="submit" value="Query" name="query"/>
+    </form>
+
+    <div>
+        {% for query_result in query_results %}
+            <p>
+                Title : {{query_result.title}}
+            </p>
+
+            <p>
+                Artist : {{query_result.artist}}
+            </p>
+
+            <p>
+                Year : {{query_result.year}}
+            </p>
+
+            <p>
+            <img src="{{query_result.image_url}}" alt = "{{query_result.title}}"/>
+            </p>
+
+            <p>
+                <button onclick="subscribe('{{user_email}}','{{query_result.title}}','{{query_result.artist}}','{{query_result.year}}')">Subscribe</button>
+            </p>
+
+        {% endfor %}
+    </div> 
+
+    <a href="/login" class = "btn btn-primary">Logout</a>
+</body>
+</html> 

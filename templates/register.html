@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <script>
+        function submitRegister(event) {
+            console.log('triggered')
+            event.preventDefault();  // Prevent the default form submission
+            const formData = {
+                email: document.getElementById('email').value,
+                user_name: document.getElementById('user_name').value,
+                password: document.getElementById('password').value
+            };
+            console.log(formData)
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.message === 'User registered successfully') {
+                    window.location.href = '/login';  // Redirect to login on successful registration
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Create a New Account</h1>
+    <form onsubmit="submitRegister(event)">
+        Email: <input type="email" id="email" required><br>
+        Username: <input type="text" id="user_name" required><br>
+        Password: <input type="password" id="password" required><br>
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
+
+
